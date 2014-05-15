@@ -1,0 +1,123 @@
+﻿@model ManagePackagesViewModel
+@{
+    ViewBag.Tab = "Site Extensions";
+}
+
+<h1 class="page-heading">Manage My Site Extensions</h1>
+
+
+@if (Model.Packages.Any())
+{
+    <section id="published">
+        <h1>Site Extensions</h1>
+        <p>These Site Extensions are currently published for the world to see.</p>
+
+        @PrintPublishedPackages(Model.Packages.Where(p => p.Listed), unlisted: false)
+    </section>
+
+    var unlistedPackages = Model.Packages.Where(p => !p.Listed);
+    if (unlistedPackages.Any())
+    {
+        <section id="unlisted">
+            <h1>Unlisted Site Extensions</h1>
+            <p>These Site Extensions are currently unlisted.</p>
+
+            @PrintPublishedPackages(unlistedPackages, unlisted: true)
+        </section>
+    }
+}
+else
+{
+    <section id="published">
+        <h1>No Site Extensions!</h1>
+        <p>
+            You don't have any Site Extensions. Maybe now is a good time to 
+            <a href="@Url.UploadPackage()" class="silverButtonBig">upload one</a>.
+        </p>
+    </section>
+}
+
+@helper PrintPublishedPackages(IEnumerable<PackageViewModel> packages, bool unlisted)
+{
+    var totalDownloads = 0;
+    var totalPackages = packages.Count();
+
+    if (totalPackages > 0)
+    {
+        <table class="sexy-table">
+            <thead>
+                <tr>
+                    <th class="first actions">Actions</th>
+                    <th>Site Extension</th>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th class="last">Downloads</th>
+                
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var package in packages)
+                {
+                    <tr>
+                        <td class="actions">
+                            @if (unlisted)
+                            {
+                                <a href="@Url.DeletePackage(package)" title="List Site Extension" class="table-action-link">
+                                    <i class="icon-share"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.EditPackage(package.Id, package.Version)" title="Edit" class="table-action-link">
+                                    <i class="icon-edit"></i>
+                                </a>
+                                <a href="@Url.DeletePackage(package)" title="Delete" class="table-action-link">
+                                    <i class="icon-trash"></i>
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Package(package)" title="View Site Extension page">@package.Title</a>
+                        </td>
+                        <td>@package.Id</td>
+                        <td>
+                            @if (String.IsNullOrEmpty(package.Description) || package.Description.Length < 65)
+                            {
+                                @package.Description
+                            }
+                            else
+                            {
+                                @package.Description.Substring(0, 65)
+                                <a href="@Url.Package(package)" title="View Site Extension page.">...</a>
+                            }
+                        </td>
+                
+                        <td>@package.DownloadCount</td>
+                    </tr>
+                    totalDownloads += package.DownloadCount;
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        @if (totalPackages > 1)
+                        {
+                            @(string.Format("You have a total of {0} Site Extensions.", totalPackages))
+                        }
+                        else
+                        {
+                            @("You have one Site Extension.")
+                        }
+                    </td>
+                    <td class="total">
+                        @totalDownloads
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p><b>You don't have any Site Extensions here.</b></p>
+    }
+}

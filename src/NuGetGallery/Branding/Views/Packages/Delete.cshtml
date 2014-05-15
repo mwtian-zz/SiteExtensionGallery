@@ -1,0 +1,48 @@
+﻿@model DisplayPackageViewModel
+@{
+    ViewBag.Tab = "Packages";
+}
+
+<h1 class="page-heading"><em>@Model.Title @Model.Version</em> Listing</h1>
+<p class="message">
+    Permanently deleting is not supported, but you can control how they are listed.
+</p>
+<p>
+    Unlisting a Site Extension hides it from search results, gallery and all NuGet commands, but it
+    is still available for download.
+</p>
+
+@using (Html.BeginForm())
+{
+    <fieldset id="unlist-form" class="form">
+        <legend>Edit @Model.Title Package</legend>
+        @Html.AntiForgeryToken()
+        <div class="form-field">
+            @Html.EditorFor(package => package.Listed)
+            <label for="Listed" class="checkbox">
+                List @Model.Title @Model.Version in search results.
+            </label>
+        </div>
+
+        <p>
+            Unchecking this box means your Site Extension cannot be installed directly and it will
+            not show up in search results.
+        </p>
+
+        <input type="submit" value="Save" title="Save Changes" />
+        <a class="cancel" href="@Url.Action("DisplayPackage")" title="Cancel Changes and go back to Site Extension page.">Cancel</a>
+    </fieldset>
+}
+
+<h2>Why can&#8217;t I delete my Site Extension?</h2>
+<p>
+    Site Extensions Gallery is based on the source code of <a href="https://github.com/NuGet/NuGetGallery">NuGet Gallery</a>.
+    Deleting a NuGet package is not supported by NuGet Gallery. 
+</p>
+<p>
+    If you need the package permanently removed, click on the <a href="@Url.Action(actionName: "ReportAbuse", controllerName: "Packages", routeValues: new { id = Model.Id, version = Model.Version })" title="Contact Support">Contact Support</a> link and we'll take care
+    of it for you. PLEASE ONLY DO THIS IF THERE IS AN URGENT PROBLEM WITH THE PACKAGE.
+    (Passwords, malicious code, etc). Even if you remove it, it's prudent to immediately
+    reset any passwords/sensitive data you accidentally pushed instead of waiting for us to delete
+    the package.
+</p>

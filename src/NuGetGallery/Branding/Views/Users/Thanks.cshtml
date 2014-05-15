@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Thanks";
+}
+
+<h1 class="page-heading">
+    Thank you for registering, @CurrentUser.Username!
+</h1>
+
+<h2>Now that you have a SiteExtensions.net account you might like to...</h2>
+
+<ul>
+    <li>
+        <p>
+            <a href="@Url.Action("Account", "Users")">View your profile</a> to update your email address or get your API key.
+        </p>
+    </li>
+    <li>
+        <p>
+            <a href="@Url.ConfirmationRequired()">Confirm your account</a> so that you can upload Site Extensions or contact Site Extension owners.
+        </p>
+    </li>
+
+    <li>
+        <p>
+            <a href="@Url.UploadPackage()">Upload a Site Extension</a>.
+        </p>
+    </li>
+</ul>
