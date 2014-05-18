@@ -298,10 +298,6 @@ namespace NuGetGallery
         {
             UriBuilder builder = new UriBuilder(url.RequestContext.HttpContext.Request.Url);
             builder.Query = String.Empty;
-            if (builder.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Host = builder.Host.Substring(4);
-            }
             return builder;
         }
 

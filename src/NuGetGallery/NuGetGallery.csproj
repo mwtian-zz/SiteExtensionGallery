@@ -1014,6 +1014,7 @@
     <Content Include="Branding\Views\Statistics\PackageDownloadsDetail.cshtml" />
     <Content Include="Branding\Views\Statistics\Packages.cshtml" />
     <Content Include="Branding\Views\Statistics\PackageVersions.cshtml" />
+    <Content Include="Branding\Views\Shared\_ListPackage.cshtml" />
     <None Include="Scripts\jquery-1.11.0.intellisense.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
