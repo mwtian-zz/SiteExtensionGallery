@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/TwoColumnLayout.cshtml";
     var absolutePackageUrl = Url.Absolute(Url.Package(Model.Id));
 }
-@section OpenGraph {
+@section SocialMeta {
     @if(!String.IsNullOrWhiteSpace(ViewBag.FacebookAppID)) {
         <meta property="fb:app_id" content="@ViewBag.FacebookAppID" /> 
     }

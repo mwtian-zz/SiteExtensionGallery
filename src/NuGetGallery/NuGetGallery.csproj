@@ -964,6 +964,8 @@
     <Compile Include="RequestModels\CreateCuratedPackageRequest.cs" />
     <Compile Include="RequestModels\VerifyPackageRequest.cs" />
     <Content Include="Branding\Content\Images\errorPage.png" />
+    <Content Include="Branding\Content\Images\extensions128x128.png" />
+    <Content Include="Branding\Content\Images\extensions50x50.png" />
     <Content Include="Branding\Content\Images\headerbackground.png" />
     <Content Include="Branding\Content\Images\icons\nuget_32_mono_b.png" />
     <Content Include="Branding\Content\Images\icons\nuget_32_mono_w.png" />
@@ -973,6 +975,8 @@
     <Content Include="Branding\Content\Images\packageOwnerActionIcons.png" />
     <Content Include="Branding\Content\Images\required.png" />
     <Content Include="Branding\Content\Images\searchButton.png" />
+    <Content Include="Branding\Content\Images\vso50x50.png" />
+    <Content Include="Branding\Content\Images\vso512x512.png" />
     <Content Include="Branding\Content\Images\YourPackage.png" />
     <Content Include="Branding\Content\Layout.css" />
     <Content Include="Branding\Content\Logos\SiteExtensionsHero.png" />
@@ -1015,7 +1019,12 @@
     <Content Include="Branding\Views\Statistics\Packages.cshtml" />
     <Content Include="Branding\Views\Statistics\PackageVersions.cshtml" />
     <Content Include="Branding\Views\Shared\_ListPackage.cshtml" />
+    <Content Include="Branding\Views\Shared\TwoColumnLayout.cshtml" />
     <None Include="Scripts\jquery-1.11.0.intellisense.js" />
+    <Content Include="Content\Images\extensions128x128.png" />
+    <Content Include="Content\Images\extensions50x50.png" />
+    <Content Include="Content\Images\vso50x50.png" />
+    <Content Include="Content\Images\vso512x512.png" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
     <Compile Include="Services\ConfirmOwnershipResult.cs" />
