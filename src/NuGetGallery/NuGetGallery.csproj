@@ -1023,6 +1023,7 @@
     <None Include="Scripts\jquery-1.11.0.intellisense.js" />
     <Content Include="Content\Images\extensions128x128.png" />
     <Content Include="Content\Images\extensions50x50.png" />
+    <Content Include="Content\Images\kudu50x50.png" />
     <Content Include="Content\Images\vso50x50.png" />
     <Content Include="Content\Images\vso512x512.png" />
     <Content Include="Scripts\jquery-1.11.0.js" />
