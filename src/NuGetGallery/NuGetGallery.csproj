@@ -970,6 +970,7 @@
     <Content Include="Branding\Content\Images\icons\nuget_32_mono_b.png" />
     <Content Include="Branding\Content\Images\icons\nuget_32_mono_w.png" />
     <Content Include="Branding\Content\Images\inputBackground.png" />
+    <Content Include="Branding\Content\Images\kudu50x50.png" />
     <Content Include="Branding\Content\Images\packageDefaultIcon-50x50.png" />
     <Content Include="Branding\Content\Images\packageDefaultIcon.png" />
     <Content Include="Branding\Content\Images\packageOwnerActionIcons.png" />
