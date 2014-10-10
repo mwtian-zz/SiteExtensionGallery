@@ -14,7 +14,7 @@ namespace NuGetGallery
         /// <summary>
         ///     Determines the maximum number of packages returned in a single page of an OData result.
         /// </summary>
-        internal const int MaxPageSize = 40;
+        internal const int MaxPageSize = 100;
 
         public static SearchFilter GetSearchFilter(string q, int page, string sortOrder, string context)
         {
@@ -57,6 +57,7 @@ namespace NuGetGallery
             }
 
             // For relevance search, Lucene returns us a paged\sorted list. OData tries to apply default ordering and Take \ Skip on top of this.
+            // It also tries to filter to latest versions, but the search service already did that!
             // We avoid it by yanking these expressions out of out the tree.
             return result.Data.InterceptWith(new DisregardODataInterceptor());
         }
@@ -79,8 +80,7 @@ namespace NuGetGallery
                 searchFilter.SearchTerm = searchTerm;
                 searchFilter.IncludePrerelease = includePrerelease;
                 searchFilter.CuratedFeed = curatedFeed;
-
-                Trace.WriteLine("TODO: use target framework parameter - see #856" + targetFramework);
+                searchFilter.SupportedFramework = targetFramework;
 
                 var results = await GetResultsFromSearchService(searchService, searchFilter);
 
@@ -160,13 +160,23 @@ namespace NuGetGallery
                 return false;
             }
 
-            string skip;
-            if (queryTerms.TryGetValue("$skip", out skip))
+            string skipStr;
+            if (queryTerms.TryGetValue("$skip", out skipStr))
             {
-                int result;
-                if (int.TryParse(skip, out result))
+                int skip;
+                if (int.TryParse(skipStr, out skip))
                 {
-                    searchFilter.Skip = result;
+                    searchFilter.Skip = skip;
+                }
+            }
+
+            string topStr;
+            if (queryTerms.TryGetValue("$top", out topStr))
+            {
+                int top;
+                if(int.TryParse(topStr, out top))
+                {
+                    searchFilter.Take = Math.Min(top, SearchAdaptor.MaxPageSize);
                 }
             }
 

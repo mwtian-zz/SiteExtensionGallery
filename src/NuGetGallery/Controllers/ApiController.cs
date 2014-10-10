@@ -15,11 +15,15 @@ using NuGet;
 using NuGetGallery.Authentication;
 using NuGetGallery.Filters;
 using NuGetGallery.Packaging;
+using NuGetGallery.Configuration;
+using System.Text;
+using System.Net.Http;
 
 namespace NuGetGallery
 {
     public partial class ApiController : AppController
     {
+        private readonly IAppConfiguration _config;
         public IEntitiesContext EntitiesContext { get; set; }
         public INuGetExeDownloaderService NugetExeDownloaderService { get; set; }
         public IPackageFileService PackageFileService { get; set; }
@@ -44,7 +48,8 @@ namespace NuGetGallery
             IIndexingService indexingService,
             ISearchService searchService,
             IAutomaticallyCuratePackageCommand autoCuratePackage,
-            IStatusService statusService)
+            IStatusService statusService,
+            IAppConfiguration config)
         {
             EntitiesContext = entitiesContext;
             PackageService = packageService;
@@ -57,6 +62,7 @@ namespace NuGetGallery
             SearchService = searchService;
             AutoCuratePackage = autoCuratePackage;
             StatusService = statusService;
+            _config = config;
         }
 
         public ApiController(
@@ -70,8 +76,9 @@ namespace NuGetGallery
             ISearchService searchService,
             IAutomaticallyCuratePackageCommand autoCuratePackage,
             IStatusService statusService,
-            IStatisticsService statisticsService)
-            : this(entitiesContext, packageService, packageFileService, userService, nugetExeDownloaderService, contentService, indexingService, searchService, autoCuratePackage, statusService)
+            IStatisticsService statisticsService,
+            IAppConfiguration config)
+            : this(entitiesContext, packageService, packageFileService, userService, nugetExeDownloaderService, contentService, indexingService, searchService, autoCuratePackage, statusService, config)
         {
             StatisticsService = statisticsService;
         }
@@ -129,7 +136,17 @@ namespace NuGetGallery
                         ProjectGuids = Request.Headers["NuGet-ProjectGuids"],
                     };
 
-                    PackageService.AddDownloadStatistics(stats);
+                    if (_config == null || _config.MetricsServiceUri == null)
+                    {
+                        PackageService.AddDownloadStatistics(stats);
+                    }
+                    else
+                    {
+                        // Disable warning about not awaiting async calls because we are _intentionally_ not awaiting this.
+#pragma warning disable 4014
+                        Task.Run(() => PostDownloadStatistics(id, package.NormalizedVersion, stats.IPAddress, stats.UserAgent, stats.Operation, stats.DependentPackage, stats.ProjectGuids));
+#pragma warning restore 4014
+                    }
                 }
                 catch (ReadOnlyModeException)
                 {
@@ -166,6 +183,56 @@ namespace NuGetGallery
                 id, 
                 String.IsNullOrEmpty(version) ? package.NormalizedVersion : version);
         }
+
+        private const string IdKey = "id";
+        private const string VersionKey = "version";
+        private const string IPAddressKey = "ipAddress";
+        private const string UserAgentKey = "userAgent";
+        private const string OperationKey = "operation";
+        private const string DependentPackageKey = "dependentPackage";
+        private const string ProjectGuidsKey = "projectGuids";
+        private const string HTTPPost = "POST";
+        private const string MetricsDownloadEventMethod = "/DownloadEvent";
+        private const string ContentTypeJson = "application/json";
+
+        private static JObject GetJObject(string id, string version, string ipAddress, string userAgent, string operation, string dependentPackage, string projectGuids)
+        {
+            var jObject = new JObject();
+            jObject.Add(IdKey, id);
+            jObject.Add(VersionKey, version);
+            if (!String.IsNullOrEmpty(ipAddress)) jObject.Add(IPAddressKey, ipAddress);
+            if (!String.IsNullOrEmpty(userAgent)) jObject.Add(UserAgentKey, userAgent);
+            if (!String.IsNullOrEmpty(operation)) jObject.Add(OperationKey, operation);
+            if (!String.IsNullOrEmpty(dependentPackage)) jObject.Add(DependentPackageKey, dependentPackage);
+            if (!String.IsNullOrEmpty(projectGuids)) jObject.Add(ProjectGuidsKey, projectGuids);
+
+            return jObject;
+        }
+
+        private async Task PostDownloadStatistics(string id, string version, string ipAddress, string userAgent, string operation, string dependentPackage, string projectGuids)
+        {
+            if (_config == null || _config.MetricsServiceUri == null)
+                return;
+
+            try
+            {
+                var jObject = GetJObject(id, version, ipAddress, userAgent, operation, dependentPackage, projectGuids);
+
+                using (var httpClient = new System.Net.Http.HttpClient())
+                {
+                    await httpClient.PostAsync(new Uri(_config.MetricsServiceUri, MetricsDownloadEventMethod), new StringContent(jObject.ToString(), Encoding.UTF8, ContentTypeJson));
+                }
+            }
+            catch (WebException ex)
+            {
+                QuietLog.LogHandledException(ex);
+            }
+            catch(AggregateException ex)
+            {
+                QuietLog.LogHandledException(ex.InnerException ?? ex);
+            }
+        }
+
 
         [HttpGet]
         [ActionName("GetNuGetExeApi")]
@@ -336,8 +403,19 @@ namespace NuGetGallery
 
         public virtual async Task<ActionResult> ServiceAlert()
         {
+            string alertString = null;
             var alert = await ContentService.GetContentItemAsync(Constants.ContentNames.Alert, TimeSpan.Zero);
-            return Content(alert == null ? (string)null : alert.ToString(), "text/html");
+            if (alert != null)
+            {
+                alertString = alert.ToString();
+            }
+            
+            if (String.IsNullOrEmpty(alertString) && _config.ReadOnlyMode)
+            {
+                var readOnly = await ContentService.GetContentItemAsync(Constants.ContentNames.ReadOnly, TimeSpan.Zero);
+                alertString = (readOnly == null) ? (string)null : readOnly.ToString();
+            }
+            return Content(alertString, "text/html");
         }
 
         public virtual async Task<ActionResult> Team()

@@ -128,5 +128,14 @@ namespace NuGetGallery.FunctionalTests.LoadTests
                 return false;
             }
         }
+
+       [TestMethod]
+       [Description("Hits the metrics service endpoint directly")]
+       [Priority(0)]
+       public void HitMetricsEndPointDirectly()
+       {
+           bool Value = MetricsServiceHelper.TryHitMetricsEndPoint("RIAServices.Server", "4.2.0", "120.0.0.0", "NuGet Load Tests/Metrics Service", "Test", "None", null);
+           Assert.IsTrue(Value);
+       }    
     }
 }
