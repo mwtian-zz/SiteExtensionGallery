@@ -13,33 +13,33 @@
     <div id="stats">
         <div class="stat">
             <p class="stat-number">@Model.AllPackages.Count.ToString("n0")</p>
-            <p class="stat-label">@(Model.AllPackages.Count == 1 ? "Package" : "Packages")</p>
+            <p class="stat-label">@(Model.AllPackages.Count == 1 ? "Site Extension" : "Site Extensions")</p>
         </div>
         <div class="stat">
             <p class="stat-number">@Model.TotalPackageDownloadCount.ToString("n0")</p>
-            <p class="stat-label">@(Model.TotalPackageDownloadCount == 1 ? "Download" : "Downloads") of @Model.Username's packages</p>
+            <p class="stat-label">Total @(Model.TotalPackageDownloadCount <= 1 ? "Download" : "Downloads")</p>
         </div>
     </div>
 }
 
-<h1 class="page-heading">@Model.Username's Profile</h1>
+<h1 class="page-heading">@Model.Username's profile</h1>
 
-<h2>Packages
-@if (Model.PackagePageTotalCount > 1 && Model.ShowAllPackages == false)
-{
-    <small>(Page @(Model.PackagePage + 1) of @Model.PackagePageTotalCount) <a href="@Url.UserShowAllPackages(Model.Username)">Show all packages</a></small>
-}
+<h2>
+    Uploaded Site Extensions
+    @if (Model.PackagePageTotalCount > 1 && Model.ShowAllPackages == false)
+    {
+        <small>(Page @(Model.PackagePage + 1) of @Model.PackagePageTotalCount) <a href="@Url.UserShowAllPackages(Model.Username)">Show all</a></small>
+    }
 </h2>
 <ul id="searchResults">
-@{
-    var allOrPagedPackages = Model.PagedPackages;
+    @{
+        var allOrPagedPackages = Model.PagedPackages;
 
-    if (Model.ShowAllPackages)
-    {
-        allOrPagedPackages = Model.AllPackages;
+        if (Model.ShowAllPackages)
+        {
+            allOrPagedPackages = Model.AllPackages;
+        }
     }
-}
-
     @foreach (var package in allOrPagedPackages)
     {
         <li>
@@ -77,6 +77,5 @@
 
 @if (Model.ShowAllPackages == false)
 {
-    @ViewHelpers.PreviousNextPager(Model.Pager)    
+    @ViewHelpers.PreviousNextPager(Model.Pager)
 }
-

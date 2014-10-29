@@ -987,7 +987,7 @@
     <Content Include="Branding\Views\Packages\UploadPackage.cshtml" />
     <Content Include="Branding\Views\Packages\DisplayPackage.cshtml" />
     <Content Include="Branding\Views\Packages\VerifyPackage.cshtml" />
-    <Content Include="Branding\Views\Users\Profiles.cshtml" />
+    <Content Include="Views\Users\Profiles.cshtml" />
     <Content Include="Branding\Views\Users\Account.cshtml" />
     <Content Include="Branding\Views\Packages\Delete.cshtml" />
     <Content Include="Branding\Views\Packages\Edit.cshtml" />
@@ -1354,7 +1354,6 @@
     <Content Include="Views\Errors\InternalError.cshtml" />
     <Content Include="Views\Users\Confirm.cshtml" />
     <Content Include="Views\Users\Thanks.cshtml" />
-    <Content Include="Views\Users\Profiles.cshtml" />
     <Content Include="Views\Authentication\LogOn.cshtml" />
     <Content Include="Views\Packages\ContactOwners.cshtml" />
     <Content Include="Views\Packages\DisplayPackage.cshtml" />
